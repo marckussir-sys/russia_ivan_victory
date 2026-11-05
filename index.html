@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Два Ивана: две стратегии</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Marck+Script&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f2ec;--fg:#0d0d0d;--ac:#e8261b;--ac2:#ffd400;--line:#0d0d0d33;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e0e0e;--fg:#f4f2ec;--line:#f4f2ec33}}
+:root[data-theme="dark"]{--bg:#0e0e0e;--fg:#f4f2ec;--line:#f4f2ec33}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:'Bricolage Grotesque',Helvetica,Arial,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:3px solid var(--ac);outline-offset:3px}
+.marquee{overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--line);padding:.6rem 0;font-weight:800;text-transform:uppercase;font-size:.85rem;background:var(--ac);color:#0d0d0d}
+.marquee div{display:inline-block;animation:m 28s linear infinite}
+.marquee span{margin:0 1.4rem}
+@keyframes m{to{transform:translateX(-50%)}}
+/* timeline */
+.tl{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:2px solid var(--fg)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:19}
+.tl-in{display:flex;overflow-x:auto;scrollbar-width:none;padding:.5rem 4vw 0}
+.tl-in::-webkit-scrollbar{display:none}
+.tl-in button{flex:none;display:flex;flex-direction:column;align-items:center;gap:.25rem;padding:.2rem .9rem .6rem;font-weight:800;font-size:.9rem;position:relative;opacity:.55;transition:.2s}
+.tl-in button::before{content:"";width:.7rem;height:.7rem;border-radius:50%;border:2px solid var(--fg);order:2;background:var(--bg)}
+.tl-in button.k3::before{border-color:var(--ac)}
+.tl-in button.k4::before{background:var(--ac2)}
+.tl-in button.on{opacity:1}
+.tl-in button.on::before{background:var(--ac);transform:scale(1.6);border-color:var(--fg)}
+.tl-in button:hover{opacity:1}
+.bar{display:block;height:4px;width:0;background:var(--ac)}
+/* hero */
+.hero{padding:5vw 4vw 6vw;position:relative}
+.hero small{display:block;max-width:36ch;margin-bottom:2rem;font-size:1.05rem;line-height:1.4}
+.big{font-weight:800;text-transform:uppercase;line-height:.82;letter-spacing:-.05em;font-size:clamp(3.4rem,19vw,20rem)}
+.big span{display:block}
+.o{color:transparent;-webkit-text-stroke:2px var(--fg)}
+.r{color:var(--ac)}
+.hand{display:inline-block;font-family:'Marck Script','Segoe Script',cursive;font-weight:400;text-transform:none;letter-spacing:0;font-size:.2em;color:var(--fg);transform:rotate(-8deg) translate(.3em,-.9em);text-decoration:underline wavy var(--ac);text-underline-offset:.15em}
+.star{position:absolute;right:5vw;top:5vw;width:clamp(60px,10vw,150px);color:var(--ac);animation:spin 10s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* blocks */
+.sec{padding:6vw 4vw 0}
+.sec>h2{font-size:1rem;text-transform:uppercase;font-weight:800;margin-bottom:1.2rem}
+.sec>h2 em{font-style:normal;color:var(--ac)}
+.lead{font-size:clamp(1.5rem,4.2vw,3.6rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;max-width:24ch;margin-bottom:2rem}
+.lead mark{background:var(--ac2);color:#0d0d0d;padding:0 .2em;border-radius:.2em}
+.tabs{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.tabs button{border:2px solid var(--fg);border-radius:99px;padding:.6rem 1.3rem;font-weight:800;text-transform:uppercase;font-size:.9rem;transition:.2s}
+.tabs button.on{background:var(--fg);color:var(--bg)}
+.tabs button:hover:not(.on){background:var(--ac2);color:#0d0d0d;border-color:#0d0d0d}
+.model{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem}
+.cell{border:1px solid var(--fg);border-radius:1.5rem;padding:1.4rem;min-height:190px;display:flex;flex-direction:column;justify-content:space-between;gap:1rem;transition:transform .3s}
+.cell:hover{transform:translateY(-6px) rotate(-1deg)}
+.cell h3{font-size:.8rem;text-transform:uppercase;font-weight:800;border:1px solid currentColor;border-radius:99px;padding:.2rem .8rem;align-self:flex-start}
+.cell p{font-size:1.05rem;line-height:1.3;font-weight:800;letter-spacing:-.01em}
+.cell.hot{background:var(--ac);color:#0d0d0d;border-color:var(--ac)}
+.cell.warn{background:var(--ac2);color:#0d0d0d;border-color:var(--ac2)}
+.cell.dark{background:var(--fg);color:var(--bg)}
+/* cases */
+.case{display:grid;grid-template-columns:5.5rem 1fr auto;gap:.4rem 1rem;align-items:baseline;border-top:1px solid var(--line);padding:1.5rem 0;transition:.3s;cursor:pointer;scroll-margin-top:90px;text-align:left;width:100%}
+.case:last-of-type{border-bottom:1px solid var(--line)}
+.case:hover,.case.on{padding-left:2vw;background:var(--ac2);color:#0d0d0d}
+.case .y{font-weight:800;font-size:1.3rem}
+.case h3{font-size:clamp(1.8rem,6vw,5.5rem);font-weight:800;line-height:.95;letter-spacing:-.04em;text-transform:uppercase}
+.case .who{font-size:.75rem;font-weight:800;text-transform:uppercase;border:1px solid currentColor;border-radius:99px;padding:.2rem .7rem}
+.case .who.p3{background:var(--ac);color:#0d0d0d;border-color:var(--ac)}
+.case p{grid-column:2;max-width:56ch;line-height:1.4}
+.case .more{grid-column:2;display:none;max-width:56ch;line-height:1.4;font-weight:800;border-left:4px solid var(--ac);padding-left:1rem;margin-top:.6rem}
+.case.on .more{display:block}
+/* game */
+.game{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.picks{display:flex;flex-direction:column;gap:.6rem}
+.pick{border:2px solid var(--fg);border-radius:1rem;padding:.9rem 1.1rem;font-weight:800;text-align:left;display:flex;justify-content:space-between;gap:1rem;transition:.2s}
+.pick small{font-weight:400;display:block;font-size:.8rem;opacity:.8}
+.pick:hover{background:var(--ac2);color:#0d0d0d;border-color:#0d0d0d}
+.pick.on{background:var(--fg);color:var(--bg)}
+.pick.on::after{content:"✕";color:var(--ac)}
+.meters{border:1px solid var(--fg);border-radius:1.5rem;padding:1.4rem;display:flex;flex-direction:column;gap:1rem}
+.m b{display:flex;justify-content:space-between;text-transform:uppercase;font-size:.85rem;margin-bottom:.3rem}
+.track{height:1.1rem;border:2px solid var(--fg);border-radius:99px;overflow:hidden}
+.fill{height:100%;background:var(--ac);width:50%;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.m.s .fill{background:var(--ac2)}
+.verdict{font-size:clamp(1.3rem,2.4vw,2rem);font-weight:800;line-height:1.05;letter-spacing:-.02em;text-transform:uppercase;min-height:3.2em}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem;padding:6vw 4vw 0}
+.stat{border:1px solid var(--fg);border-radius:1.5rem;padding:1.4rem;aspect-ratio:1/1;display:flex;flex-direction:column;justify-content:space-between}
+.stat:nth-child(2){background:var(--ac);color:#0d0d0d;border-color:var(--ac)}
+.stat strong{font-size:clamp(3rem,7vw,6rem);letter-spacing:-.05em;line-height:1}
+.stat span{text-transform:uppercase;font-weight:800;font-size:.8rem}
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+footer{margin-top:6vw;background:var(--fg);color:var(--bg);padding:5vw 4vw 2rem;border-radius:2rem 2rem 0 0}
+footer .big{font-size:clamp(2.6rem,11vw,12rem)}
+footer .row{margin-top:2.5rem;font-weight:800;text-transform:uppercase;font-size:.8rem;opacity:.7}
+@media(max-width:700px){.game{grid-template-columns:1fr}.case{grid-template-columns:3.6rem 1fr}.case .who{display:none}.case p,.case .more{grid-column:1/-1}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+
+/* Historical atlas — integrated into the original editorial design */
+.history-section{padding:6vw 4vw 0}
+.history-section>h2{font-size:1rem;text-transform:uppercase;font-weight:800;margin-bottom:1.2rem}
+.history-section>h2 em{font-style:normal;color:var(--ac)}
+.history-intro{max-width:70ch;line-height:1.45;margin-bottom:1.4rem;opacity:.82}
+.history-panel{border:1px solid var(--fg);border-radius:1.4rem;padding:clamp(.8rem,2vw,1.4rem);background:var(--bg)}
+.history-top{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;padding-bottom:1rem;border-bottom:1px solid var(--line)}
+.history-badge{display:inline-block;background:var(--ac2);color:#0d0d0d;padding:.35rem .65rem;border-radius:999px;font-size:.72rem;font-weight:800;text-transform:uppercase}
+.history-title{font-size:clamp(1rem,2vw,1.4rem);font-weight:800;margin-top:.5rem}
+.history-steps{display:flex;gap:.45rem;flex-wrap:wrap}
+.history-steps button{border:1px solid var(--fg);border-radius:999px;padding:.45rem .75rem;font-size:.75rem;font-weight:800}
+.history-steps button.active{background:var(--fg);color:var(--bg)}
+.history-range{padding:1rem .2rem .4rem}
+.history-range input{width:100%;accent-color:var(--ac);cursor:pointer}
+.history-range-labels{display:grid;grid-template-columns:repeat(5,1fr);gap:.3rem;font-size:.65rem;opacity:.65}
+.history-range-labels span:nth-child(n+2):nth-child(-n+4){text-align:center}
+.history-range-labels span:last-child{text-align:right}
+.history-layout{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(250px,1fr);gap:1rem;margin-top:1rem;align-items:start}
+.history-map-card,.history-info-card{border:1px solid var(--line);border-radius:1rem;padding:.85rem;min-width:0}
+.history-map-head{display:flex;gap:.7rem;justify-content:space-between;align-items:center;flex-wrap:wrap;font-size:.7rem;padding-bottom:.7rem}
+.history-legend{display:flex;gap:.65rem;flex-wrap:wrap}
+.history-legend span{display:inline-flex;align-items:center;gap:.3rem}
+.history-swatch{width:.7rem;height:.7rem;border:1px solid #263238;display:inline-block;border-radius:2px}
+.history-layers{display:flex;gap:.7rem;flex-wrap:wrap;opacity:.8}
+.history-layers label{display:flex;align-items:center;gap:.25rem;cursor:pointer}
+#map-viewport{position:relative;width:100%;aspect-ratio:11/7;border:1px solid var(--line);border-radius:.7rem;overflow:hidden;background:#64A6BD;cursor:grab;touch-action:pan-y}
+#map-viewport.dragging{cursor:grabbing}
+.history-map svg{display:block;width:100%;height:100%}
+.history-map .pointer-events-none{pointer-events:none}
+.history-map .hidden{display:none}
+.history-map .map-region{cursor:pointer}
+.history-map .map-region:focus{outline:none;stroke:#111;stroke-width:3}
+.history-map .state-label-major,.history-map .state-label-minor,.history-map .city-label,.history-map .river-label{paint-order:stroke;stroke-linejoin:round}
+.history-map-controls{position:absolute;right:.6rem;bottom:.6rem;display:flex;gap:.2rem;background:#fffF;border:1px solid #1e293b44;border-radius:.6rem;padding:.2rem}
+.history-map-controls button{min-width:2rem;height:2rem;border-radius:.35rem;font-weight:800;color:#111}
+.history-map-controls button:hover{background:#eee}
+.history-date{position:absolute;left:.6rem;top:.6rem;background:#fffF;color:#111;border-radius:.55rem;padding:.4rem .65rem;font-size:.68rem;box-shadow:0 1px 5px #0002}
+.history-date strong{display:block;font-size:.9rem}
+.history-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem;margin-top:.7rem}
+.history-stat{border:1px solid var(--line);border-radius:.65rem;padding:.6rem;font-size:.7rem;line-height:1.3}
+.history-stat b{display:block;font-size:.78rem;margin-top:.2rem}
+.history-info-card{display:flex;flex-direction:column;gap:.8rem}
+.history-info-card h3{font-size:1.05rem;font-weight:800}
+.history-info-card h4{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;opacity:.55}
+.history-info-card p,.history-info-card li{font-size:.82rem;line-height:1.45}
+.history-info-card ul{padding-left:1.1rem;display:grid;gap:.45rem}
+.history-info-box{border-left:3px solid var(--ac);padding:.65rem .75rem;background:color-mix(in srgb,var(--fg) 5%,var(--bg))}
+.history-disclaimer{font-size:.7rem;line-height:1.4;opacity:.62;margin-top:.75rem}
+.history-section .map-region{transition:filter .2s,stroke-width .2s}
+@media(max-width:800px){.history-layout{grid-template-columns:1fr}.history-steps button{font-size:.68rem}.history-range-labels{font-size:.55rem}}
+@media(max-width:520px){.history-section{padding-left:4vw;padding-right:4vw}.history-legend{font-size:.62rem}.history-layers{font-size:.62rem}.history-map-head{align-items:flex-start}.history-range-labels span{overflow-wrap:anywhere}}
+
+
+.history-map .sea-bg{fill:#64A6BD}
+.history-map .coast-shallow{fill:none;stroke:#85BFD3;stroke-width:5;stroke-linejoin:round;opacity:.65;pointer-events:none}
+.history-map .map-region{stroke:#1E293B;stroke-width:1.15;stroke-linejoin:round;stroke-linecap:round;transition:fill .35s ease,stroke-width .2s ease,filter .2s ease;cursor:pointer}
+.history-map .map-region:hover{filter:brightness(1.07)}
+.history-map .map-region.active-region{stroke:#0F172A;stroke-width:2.8;filter:brightness(1.04)}
+.history-map .absorbed-border{stroke:rgba(30,41,59,.24);stroke-width:.8;stroke-dasharray:4 3}
+.history-map .state-label-major{font-family:Inter,Arial,sans-serif;font-weight:800;letter-spacing:.12em;fill:#0F172A;stroke:rgba(255,255,255,.9);stroke-width:3.5;pointer-events:none}
+.history-map .state-label-minor{font-family:Inter,Arial,sans-serif;font-weight:700;letter-spacing:.06em;fill:#1E293B;stroke:rgba(255,255,255,.86);stroke-width:2.6;pointer-events:none}
+.history-map .city-label{font-family:Inter,Arial,sans-serif;font-size:9.5px;font-weight:700;fill:#0F172A;stroke:#fff;stroke-width:2.4;pointer-events:none}
+.history-map .river-path{fill:none;stroke:#287b9e;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:.8;pointer-events:none}
+.history-map .river-label{font-family:Inter,Arial,sans-serif;font-size:7.5px;font-style:italic;fill:#1E4E68;stroke:rgba(255,255,255,.75);stroke-width:1.8;pointer-events:none}
+.history-map .map-region.active-region{stroke:#0d0d0d}
+
+</style>
+</head>
+<body>
+<div class="marquee"><div id="mq"></div></div>
+<nav class="tl" aria-label="Таймлайн"><div class="tl-in" id="tl"></div><i class="bar" id="bar"></i></nav>
+
+<header class="hero" id="top">
+  <svg class="star" viewBox="0 0 100 100" aria-hidden="true"><g stroke="currentColor" stroke-width="13" stroke-linecap="round"><path d="M50 8V92"/><path d="M13.6 29L86.4 71"/><path d="M13.6 71L86.4 29"/></g></svg>
+  <small>Дед собирал землю хитростью. Внук собирал её страхом. Проект группы КВБО-12-26</small>
+  <h1 class="big"><span class="o">Два</span><span class="r">Ивана<i class="hand">Новая Россия?</i></span></h1>
+</header>
+
+
+<section class="history-section" id="historical-map">
+  <h2>Историческая карта <em>/ изменение границ и баланса сил</em></h2>
+  <p class="history-intro">Переключай эпохи, изучай политическую обстановку и нажимай на территории. Карта показывает не современную Россию, а политическую географию Восточной Европы и сопредельных регионов XV–XVI веков.</p>
+  <div class="history-panel">
+    <div class="history-top">
+      <div>
+        <span id="hist-era-badge" class="history-badge">Иван III • 1462</span>
+        <div id="hist-era-title" class="history-title">1462 год — Московское княжество и его соседи</div>
+      </div>
+      <div class="history-steps">
+        <button type="button" data-epoch="0" class="active">1462</button>
+        <button type="button" data-epoch="1">1478–1485</button>
+        <button type="button" data-epoch="2">1503–1521</button>
+        <button type="button" data-epoch="3">1552–1556</button>
+        <button type="button" data-epoch="4">1558–1583</button>
+      </div>
+    </div>
+    <div class="history-range">
+      <input id="hist-slider" type="range" min="0" max="4" step="1" value="0" aria-label="Историческая эпоха">
+      <div class="history-range-labels"><span>1462</span><span>1478–85</span><span>1503–21</span><span>1552–56</span><span>1558–83</span></div>
+    </div>
+    <div class="history-layout">
+      <div class="history-map-card">
+        <div class="history-map-head">
+          <div class="history-legend">
+            <span><i class="history-swatch" style="background:#D88B4B"></i> Москва</span>
+            <span><i class="history-swatch" style="background:#76A884"></i> Новгород</span>
+            <span><i class="history-swatch" style="background:#B35472"></i> Литва / Польша</span>
+            <span><i class="history-swatch" style="background:#C5B368"></i> Ханства</span>
+          </div>
+          <div class="history-layers">
+            <label><input type="checkbox" checked data-layer="layer-vectors"> Походы</label>
+            <label><input type="checkbox" checked data-layer="layer-trade"> Пути</label>
+            <label><input type="checkbox" checked data-layer="layer-cities"> Города</label>
+          </div>
+        </div>
+        <div id="map-viewport" class="history-map">
+          <svg id="historical-svg" viewBox="0 0 1100 700" class="w-full h-full">
+                            <defs>
+                                <!-- Oprichnina Hatching -->
+                                <pattern id="oprichHatch" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                                    <line x1="0" y1="0" x2="0" y2="10" stroke="#B91C1C" stroke-width="3.2" stroke-opacity="0.55" />
+                                </pattern>
+                                <!-- Contested Livonia Hatching -->
+                                <pattern id="livoniaHatch" width="8" height="8" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse">
+                                    <line x1="0" y1="0" x2="0" y2="8" stroke="#4676B4" stroke-width="4" />
+                                    <line x1="4" y1="0" x2="4" y2="8" stroke="#B35472" stroke-width="4" />
+                                </pattern>
+                                <!-- Arrowheads -->
+                                <marker id="arrowRed" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#DC2626" />
+                                </marker>
+                                <marker id="arrowDark" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#1E293B" />
+                                </marker>
+                                <marker id="arrowBlue" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#0284C7" />
+                                </marker>
+                            </defs>
+
+                            <g id="map-pan-zoom-group">
+                                <!-- 1. SEA BASE -->
+                                <rect width="1100" height="700" class="sea-bg" />
+
+                                <!-- 2. SURROUNDING GEOGRAPHY (Non-interactive context states: Central Europe, Balkans, Anatolia, Caucasus, Kazakh Steppe) -->
+                                <!-- Norway & Northern Lapland -->
+                                <path d="M 40,0 L 365,0 L 395,22 L 352,48 L 310,42 L 245,65 L 185,115 L 115,122 L 62,88 Z" fill="#D5DEE2" stroke="#1E293B" stroke-width="1"/>
+                                <text x="155" y="62" class="state-label-minor" font-size="9" text-anchor="middle">ДАНО-НОРВЕЖСКАЯ УНИЯ</text>
+
+                                <!-- Denmark, Jutland & Gotland -->
+                                <path d="M 75,165 L 115,158 L 130,202 L 82,212 Z" fill="#E6A8A8" stroke="#1E293B" stroke-width="1"/>
+                                <ellipse cx="222" cy="188" rx="8" ry="18" fill="#E6A8A8" stroke="#1E293B" stroke-width="0.9"/>
+
+                                <!-- Holy Roman Empire, Prussia & Central Europe -->
+                                <path d="M 0,225 L 195,222 L 265,205 L 305,212 L 292,248 L 238,262 L 155,345 L 0,340 Z" fill="#7D988C" stroke="#1E293B" stroke-width="1"/>
+                                <text x="235" y="236" class="state-label-minor" font-size="8.5" text-anchor="middle">ПРУССИЯ (ОРДЕН)</text>
+
+                                <!-- Kingdom of Hungary & Moldavia -->
+                                <path d="M 0,340 L 155,345 L 258,395 L 252,495 L 115,512 L 0,490 Z" fill="#A66D60" stroke="#1E293B" stroke-width="1"/>
+                                <text x="125" y="435" class="state-label-minor" font-size="11" text-anchor="middle">КОРОЛЕВСТВО ВЕНГРИЯ</text>
+
+                                <path d="M 258,395 L 348,402 L 372,478 L 335,498 L 252,495 Z" fill="#C4CE78" stroke="#1E293B" stroke-width="1"/>
+                                <text x="312" y="452" class="state-label-minor" font-size="9" text-anchor="middle">МОЛДАВИЯ</text>
+
+                                <!-- Ottoman Empire (Balkans & Anatolia across Black Sea) -->
+                                <path d="M 0,490 L 252,495 L 335,498 L 318,548 L 288,588 L 332,612 L 495,598 L 635,585 L 685,700 L 0,700 Z" fill="#8CC598" stroke="#1E293B" stroke-width="1.1"/>
+                                <text x="315" y="645" class="state-label-major" font-size="17" text-anchor="middle">ОСМАНСКАЯ ИМПЕРИЯ</text>
+
+                                <!-- Caucasus & Circassia (Between Black & Caspian Seas) -->
+                                <path d="M 565,528 L 668,545 L 772,582 L 785,700 L 685,700 L 635,585 L 548,552 Z" fill="#6E9E65" stroke="#1E293B" stroke-width="1"/>
+                                <text x="675" y="615" class="state-label-minor" font-size="9.5" text-anchor="middle" transform="rotate(16, 675, 615)">ЧЕРКЕСИЯ И КАВКАЗ</text>
+
+                                <!-- Nogai Horde & Trans-Caspian Steppe -->
+                                <path d="M 865,365 L 1100,348 L 1100,565 L 915,542 L 855,478 Z" fill="#D5DEC2" stroke="#1E293B" stroke-width="1"/>
+                                <text x="975" y="455" class="state-label-minor" font-size="11" text-anchor="middle">НОГАЙСКАЯ ОРДА</text>
+
+
+                                <!-- =======================================================
+                                     3. INTERACTIVE STATES & RUSSIAN PRINCIPALITIES
+                                     ======================================================= -->
+
+                                <!-- KINGDOM OF SWEDEN (Scandinavia + Finland) -->
+                                <g onclick="histSelectRegion('sweden')">
+                                    <path id="reg-sweden" class="map-region" fill="#4676B4"
+                                        d="M 185,115 L 245,65 L 310,42 L 352,48 L 385,72 L 402,112 L 368,125 L 325,118 L 308,92 L 268,98 L 258,145 L 212,185 L 158,175 L 145,135 Z"/>
+                                    <text x="275" y="82" class="state-label-minor" font-size="11" text-anchor="middle">КОРОЛЕВСТВО ШВЕЦИЯ</text>
+                                </g>
+
+                                <!-- KINGDOM OF POLAND -->
+                                <g onclick="histSelectRegion('lithuania')">
+                                    <path id="reg-poland" class="map-region" fill="#CE6A7B"
+                                        d="M 155,345 L 238,262 L 292,248 L 325,288 L 365,368 L 348,402 L 258,395 Z"/>
+                                    <text x="262" y="338" class="state-label-minor" font-size="10.5" text-anchor="middle" transform="rotate(20, 262, 338)">ПОЛЬША</text>
+                                </g>
+
+                                <!-- GRAND DUCHY OF LITHUANIA -->
+                                <g onclick="histSelectRegion('lithuania')">
+                                    <path id="reg-lithuania" class="map-region" fill="#B35472"
+                                        d="M 292,248 L 345,212 L 388,218 L 415,212 L 435,232 L 428,285 L 442,335 L 485,375 L 472,445 L 418,485 L 372,478 L 348,402 L 365,368 L 325,288 Z"/>
+                                </g>
+
+                                <!-- LIVONIAN CONFEDERATION (Estonia & Latvia with Gulf of Riga) -->
+                                <g onclick="histSelectRegion('livonia')">
+                                    <path id="reg-livonia" class="map-region" fill="#9B8BB4"
+                                        d="M 318,142 L 378,138 L 385,172 L 388,218 L 345,212 L 292,248 L 282,215 L 315,198 L 322,182 L 298,172 Z"/>
+                                    <text id="lbl-livonia" x="345" y="182" class="state-label-minor" font-size="8.5" text-anchor="middle">ЛИВОНИЯ</text>
+                                </g>
+
+                                <!-- PSKOV REPUBLIC -->
+                                <g onclick="histSelectRegion('novgorod')">
+                                    <path id="reg-pskov" class="map-region" fill="#8AA882"
+                                        d="M 385,172 L 412,168 L 415,212 L 388,218 Z"/>
+                                    <text id="lbl-pskov" x="400" y="196" class="state-label-minor" font-size="7" text-anchor="middle">ПСКОВ</text>
+                                </g>
+
+                                <!-- NOVGOROD REPUBLIC & NORTHERN POMORYE (Realistic White Sea & Kola indent) -->
+                                <g onclick="histSelectRegion('novgorod')">
+                                    <path id="reg-novgorod" class="map-region" fill="#76A884"
+                                        d="M 378,138 L 368,125 L 402,112 L 385,72 L 395,22 L 475,15 L 525,38 L 512,68 L 472,65 L 465,92 L 515,115 L 555,82 L 585,48 L 725,28 L 785,68 L 762,185 L 635,195 L 528,195 L 462,188 L 412,168 Z"/>
+                                    <text id="lbl-novgorod" x="575" y="142" class="state-label-major" font-size="13.5" text-anchor="middle">НОВГОРОДСКАЯ ЗЕМЛЯ</text>
+                                </g>
+
+                                <!-- GRAND DUCHY OF TVER -->
+                                <g onclick="histSelectRegion('tver')">
+                                    <path id="reg-tver" class="map-region" fill="#B59275"
+                                        d="M 415,212 L 462,188 L 515,202 L 502,238 L 435,232 Z"/>
+                                    <text id="lbl-tver" x="466" y="218" class="state-label-minor" font-size="8" text-anchor="middle">ТВЕРЬ</text>
+                                </g>
+
+                                <!-- SMOLENSK & CHERNIGOV-SEVERSK LANDS (Western March) -->
+                                <g onclick="histSelectRegion('smolensk')">
+                                    <path id="reg-smolensk" class="map-region" fill="#B35472"
+                                        d="M 435,232 L 502,238 L 512,288 L 518,358 L 485,375 L 442,335 L 428,285 Z"/>
+                                    <text id="lbl-smolensk" x="472" y="302" class="state-label-minor" font-size="7.5" text-anchor="middle">СМОЛЕНСК И СЕВЕРСК</text>
+                                </g>
+
+                                <!-- GRAND DUCHY OF RYAZAN -->
+                                <g onclick="histSelectRegion('tver')">
+                                    <path id="reg-ryazan" class="map-region" fill="#C47462"
+                                        d="M 518,298 L 582,292 L 592,352 L 518,358 Z"/>
+                                    <text id="lbl-ryazan" x="555" y="328" class="state-label-minor" font-size="8" text-anchor="middle">РЯЗАНЬ</text>
+                                </g>
+
+                                <!-- GRAND DUCHY OF MUSCOVY CORE (Moscow, Vladimir, Nizhny Novgorod, Vologda) -->
+                                <g onclick="histSelectRegion('moscow')">
+                                    <path id="reg-moscow" class="map-region" fill="#D88B4B"
+                                        d="M 515,202 L 528,195 L 635,195 L 685,208 L 672,278 L 582,292 L 518,298 L 512,288 L 502,238 Z"/>
+
+                                    <!-- Oprichnina Territory Overlay (1565-1572) -->
+                                    <path id="reg-oprichnina" class="hidden pointer-events-none" fill="url(#oprichHatch)" stroke="#B91C1C" stroke-width="1.8" stroke-dasharray="5,3"
+                                        d="M 462,188 L 635,195 L 652,255 L 555,268 L 502,238 Z M 515,115 L 725,85 L 712,188 L 528,195 Z"/>
+                                </g>
+
+                                <!-- KAZAN KHANATE (Middle Volga & Kama) -->
+                                <g onclick="histSelectRegion('kazan')">
+                                    <path id="reg-kazan" class="map-region" fill="#C5B368"
+                                        d="M 685,208 L 762,185 L 845,208 L 832,328 L 722,345 L 662,312 L 672,278 Z"/>
+                                    <text id="lbl-kazan" x="755" y="272" class="state-label-minor" font-size="10.5" text-anchor="middle">КАЗАНСКОЕ ХАНСТВО</text>
+                                </g>
+
+                                <!-- GREAT HORDE / WILD FIELD (Southern Steppe between Dnieper & Volga) -->
+                                <g onclick="histSelectRegion('crimea')">
+                                    <path id="reg-horde" class="map-region" fill="#D8C97E"
+                                        d="M 485,375 L 518,358 L 592,352 L 662,312 L 722,345 L 742,438 L 638,478 L 565,455 L 472,445 Z"/>
+                                    <text id="lbl-horde" x="615" y="408" class="state-label-minor" font-size="11" text-anchor="middle">БОЛЬШАЯ ОРДА</text>
+                                </g>
+
+                                <!-- ASTRAKHAN KHANATE (Lower Volga & Caspian Delta) -->
+                                <g onclick="histSelectRegion('astrakhan')">
+                                    <path id="reg-astrakhan" class="map-region" fill="#D99B72"
+                                        d="M 722,345 L 832,328 L 865,365 L 855,478 L 795,512 L 742,522 L 685,505 L 742,438 Z"/>
+                                    <text id="lbl-astrakhan" x="788" y="445" class="state-label-minor" font-size="9.5" text-anchor="middle">АСТРАХАНСКОЕ ХАНСТВО</text>
+                                </g>
+
+                                <!-- CRIMEAN KHANATE (Northern Black Sea, Azov & Realistic Crimean Peninsula) -->
+                                <g onclick="histSelectRegion('crimea')">
+                                    <path id="reg-crimea" class="map-region" fill="#52B2AE"
+                                        d="M 418,485 L 472,445 L 565,455 L 638,478 L 605,518 L 552,515 L 522,495 L 502,512 L 542,535 L 502,562 L 455,545 L 478,512 L 412,502 Z"/>
+                                    <text id="lbl-crimea" x="522" y="488" class="state-label-minor" font-size="10.5" text-anchor="middle">КРЫМСКОЕ ХАНСТВО</text>
+                                </g>
+
+                                <!-- SIBERIAN KHANATE & URALS (Eastern Frontier) -->
+                                <g onclick="histSelectRegion('siberia')">
+                                    <path id="reg-siberia" class="map-region" fill="#BAC4C0"
+                                        d="M 785,68 L 1100,45 L 1100,348 L 865,365 L 832,328 L 845,208 L 762,185 Z"/>
+                                    <text id="lbl-siberia" x="955" y="218" class="state-label-major" font-size="13" text-anchor="middle">СИБИРСКОЕ ХАНСТВО</text>
+                                </g>
+
+
+                                <!-- =======================================================
+                                     4. REALISTIC LAKES & RIVER NETWORK
+                                     ======================================================= -->
+                                <g class="pointer-events-none">
+                                    <!-- Lake Ladoga, Onega, Peipus, Ilmen -->
+                                    <ellipse cx="418" cy="132" rx="15" ry="20" fill="#64A6BD" stroke="#1E293B" stroke-width="0.8"/>
+                                    <ellipse cx="468" cy="118" rx="10" ry="15" fill="#64A6BD" stroke="#1E293B" stroke-width="0.8"/>
+                                    <ellipse cx="382" cy="175" rx="5.5" ry="12" fill="#64A6BD" stroke="#1E293B" stroke-width="0.7"/>
+                                    <ellipse cx="425" cy="182" rx="6" ry="4" fill="#64A6BD" stroke="#1E293B" stroke-width="0.7"/>
+
+                                    <!-- Volga River (From Valdai through Tver, Nizhny, Kazan, Samara loop to Astrakhan) -->
+                                    <path class="river-path" stroke-width="2.4" d="M 445,205 C 495,208 565,212 635,235 C 695,252 738,268 742,325 C 745,385 735,432 775,512"/>
+                                    <text x="725" y="378" class="river-label" transform="rotate(82, 725, 378)">р. Волга</text>
+
+                                    <!-- Oka & Ugra River -->
+                                    <path class="river-path" d="M 498,282 C 535,285 578,272 625,235"/>
+                                    <text x="558" y="275" class="river-label">р. Ока</text>
+
+                                    <!-- Dnieper River (From Smolensk through Kiev to Black Sea) -->
+                                    <path class="river-path" stroke-width="2" d="M 465,248 C 438,295 432,355 448,412 C 458,448 432,475 422,498"/>
+                                    <text x="425" y="365" class="river-label" transform="rotate(85, 425, 365)">р. Днепр</text>
+
+                                    <!-- Don River (To Sea of Azov) -->
+                                    <path class="river-path" d="M 552,312 C 588,372 618,425 562,488"/>
+                                    <text x="598" y="415" class="river-label">р. Дон</text>
+
+                                    <!-- Northern Dvina (To White Sea) -->
+                                    <path class="river-path" d="M 615,175 C 588,138 562,108 538,75"/>
+                                    <text x="582" y="128" class="river-label">Сев. Двина</text>
+
+                                    <!-- Kama River (Urals to Volga) -->
+                                    <path class="river-path" d="M 835,195 C 798,225 768,248 732,268"/>
+                                </g>
+
+
+                                <!-- =======================================================
+                                     5. TRADE ROUTES OVERLAY (Volga-Caspian & Baltic-White Sea)
+                                     ======================================================= -->
+                                <g id="layer-trade" class="pointer-events-none">
+                                    <!-- Baltic Hansa Route -->
+                                    <path d="M 245,165 Q 325,142 418,168" fill="none" stroke="#0284C7" stroke-width="1.8" stroke-dasharray="3,4"/>
+                                    <!-- White Sea English Route (from 1553) -->
+                                    <path id="trade-whitesea" opacity="0" d="M 445,8 Q 525,35 535,78 L 545,248" fill="none" stroke="#0284C7" stroke-width="2" stroke-dasharray="4,4"/>
+                                    <!-- Volga-Caspian Persian Trade Route (from 1556) -->
+                                    <path id="trade-volga" opacity="0" d="M 545,248 Q 665,245 732,275 T 778,515 L 835,585" fill="none" stroke="#0284C7" stroke-width="2.5" stroke-dasharray="5,4" marker-end="url(#arrowBlue)"/>
+                                </g>
+
+
+                                <!-- =======================================================
+                                     6. MILITARY VECTORS & STRATEGIC MARKERS OVERLAY
+                                     ======================================================= -->
+                                <g id="layer-vectors" class="pointer-events-none">
+                                    <!-- Epoch 1 (1478-1485): Novgorod Campaign & Stand on the Ugra -->
+                                    <g id="vec-epoch-1" opacity="0">
+                                        <!-- March on Novgorod 1471/1478 -->
+                                        <path d="M 535,238 Q 485,205 438,182" fill="none" stroke="#DC2626" stroke-width="2.4" stroke-dasharray="5,3" marker-end="url(#arrowRed)"/>
+                                        <!-- Stand on the Ugra 1480 -->
+                                        <circle cx="502" cy="276" r="9" fill="#DC2626" fill-opacity="0.22" stroke="#DC2626" stroke-width="1.8"/>
+                                        <text x="502" y="264" class="city-label" fill="#B91C1C" text-anchor="middle">Стояние на Угре (1480)</text>
+                                        <!-- Ahmad's Horde advance & retreat -->
+                                        <path d="M 595,385 Q 545,335 508,286" fill="none" stroke="#1E293B" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrowDark)"/>
+                                    </g>
+
+                                    <!-- Epoch 2 (1505-1521): Western Wars with Lithuania for Smolensk & Chernigov -->
+                                    <g id="vec-epoch-2" opacity="0">
+                                        <path d="M 535,248 Q 498,255 468,262" fill="none" stroke="#DC2626" stroke-width="2.4" stroke-dasharray="5,3" marker-end="url(#arrowRed)"/>
+                                        <path d="M 535,258 Q 495,305 468,335" fill="none" stroke="#DC2626" stroke-width="2.4" stroke-dasharray="5,3" marker-end="url(#arrowRed)"/>
+                                    </g>
+
+                                    <!-- Epoch 3 (1552-1556): Conquest of Kazan & Astrakhan -->
+                                    <g id="vec-epoch-3" opacity="0">
+                                        <path d="M 552,248 Q 645,242 722,266" fill="none" stroke="#DC2626" stroke-width="2.8" stroke-dasharray="6,3" marker-end="url(#arrowRed)"/>
+                                        <path d="M 735,278 Q 748,375 772,482" fill="none" stroke="#DC2626" stroke-width="2.8" stroke-dasharray="6,3" marker-end="url(#arrowRed)"/>
+                                        <circle cx="732" cy="268" r="8" fill="#DC2626" fill-opacity="0.25" stroke="#DC2626" stroke-width="1.6"/>
+                                    </g>
+
+                                    <!-- Epoch 4 (1558-1583): Livonian War, Crimean Raid 1571/Molodi 1572, Yermak to Siberia 1581 -->
+                                    <g id="vec-epoch-4" opacity="0">
+                                        <!-- Russian strike into Livonia (1558) -->
+                                        <path d="M 515,225 Q 435,192 365,168" fill="none" stroke="#DC2626" stroke-width="2.4" stroke-dasharray="5,3" marker-end="url(#arrowRed)"/>
+                                        <!-- Polish-Lithuanian counterattack (Batory to Polotsk & Pskov 1579-1581) -->
+                                        <path d="M 355,265 Q 385,235 402,202" fill="none" stroke="#1E293B" stroke-width="2.4" stroke-dasharray="4,3" marker-end="url(#arrowDark)"/>
+                                        <!-- Devlet Giray Raid on Moscow 1571 & Battle of Molodi 1572 -->
+                                        <path d="M 522,475 Q 535,375 542,265" fill="none" stroke="#1E293B" stroke-width="2.2" stroke-dasharray="4,3" marker-end="url(#arrowDark)"/>
+                                        <circle cx="542" cy="276" r="7" fill="#DC2626" fill-opacity="0.25" stroke="#DC2626" stroke-width="1.5"/>
+                                        <text x="542" y="292" class="city-label" fill="#B91C1C" text-anchor="middle">Молоди (1572)</text>
+                                        <!-- Yermak Campaign to Siberia (1581-1582) -->
+                                        <path d="M 765,215 Q 845,198 925,215" fill="none" stroke="#DC2626" stroke-width="2.6" stroke-dasharray="6,3" marker-end="url(#arrowRed)"/>
+                                        <text x="865" y="192" class="city-label" fill="#B91C1C" text-anchor="middle">Поход Ермака (1581)</text>
+                                    </g>
+                                </g>
+
+
+                                <!-- =======================================================
+                                     7. DYNAMIC MAJOR STATE LABELS
+                                     ======================================================= -->
+                                <text id="major-lbl-muscovy" x="595" y="242" class="state-label-major" font-size="14.5" text-anchor="middle">
+                                    ВЕЛ. КН. МОСКОВСКОЕ
+                                </text>
+
+                                <text id="major-lbl-lith-1" x="392" y="362" class="state-label-major" font-size="13" text-anchor="middle">
+                                    ВЕЛИКОЕ КНЯЖЕСТВО
+                                </text>
+                                <text id="major-lbl-lith-2" x="392" y="379" class="state-label-major" font-size="13" text-anchor="middle">
+                                    ЛИТОВСКОЕ
+                                </text>
+
+
+                                <!-- =======================================================
+                                     8. CITIES & CAPITALS LAYER
+                                     ======================================================= -->
+                                <g id="layer-cities" class="pointer-events-none">
+                                    <!-- Moscow -->
+                                    <circle cx="545" cy="248" r="4.2" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5"/>
+                                    <text x="554" y="252" class="city-label" font-size="10.5">МОСКВА</text>
+
+                                    <!-- Veliky Novgorod -->
+                                    <circle cx="428" cy="175" r="3.2" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.2"/>
+                                    <text x="436" y="178" class="city-label">Новгород</text>
+
+                                    <!-- Pskov -->
+                                    <circle cx="392" cy="192" r="2.6" fill="#0F172A" stroke="#FFFFFF" stroke-width="1"/>
+                                    <text x="352" y="196" class="city-label">Псков</text>
+
+                                    <!-- Tver -->
+                                    <circle cx="492" cy="218" r="2.8" fill="#0F172A" stroke="#FFFFFF" stroke-width="1"/>
+                                    <text x="498" y="215" class="city-label">Тверь</text>
+
+                                    <!-- Smolensk -->
+                                    <circle cx="462" cy="258" r="3" fill="#0F172A" stroke="#FFFFFF" stroke-width="1"/>
+                                    <text x="468" y="268" class="city-label">Смоленск</text>
+
+                                    <!-- Narva / Revel -->
+                                    <circle cx="362" cy="148" r="2.6" fill="#0F172A" stroke="#FFFFFF" stroke-width="1"/>
+                                    <text x="332" y="142" class="city-label">Нарва</text>
+
+                                    <!-- Riga -->
+                                    <circle cx="322" cy="202" r="2.8" fill="#0F172A" stroke="#FFFFFF" stroke-width="1"/>
+                                    <text x="292" y="206" class="city-label">Рига</text>
+
+                                    <!-- Vilnius -->
+                                    <circle cx="342" cy="258" r="3.2" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.2"/>
+                                    <text x="350" y="262" class="city-label">Вильно</text>
+
+                                    <!-- Kiev -->
+                                    <circle cx="432" cy="395" r="3.2" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.2"/>
+                                    <text x="440" y="398" class="city-label">Киев</text>
+
+                                    <!-- Nizhny Novgorod -->
+                                    <circle cx="635" cy="235" r="2.8" fill="#0F172A" stroke="#FFFFFF" stroke-width="1"/>
+                                    <text x="615" y="228" class="city-label">Н. Новгород</text>
+
+                                    <!-- Kazan -->
+                                    <circle cx="732" cy="268" r="3.5" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.2"/>
+                                    <text x="742" y="272" class="city-label">Казань</text>
+
+                                    <!-- Astrakhan -->
+                                    <circle cx="775" cy="495" r="3.2" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.2"/>
+                                    <text x="784" y="498" class="city-label">Астрахань</text>
+
+                                    <!-- Bakhchisarai -->
+                                    <circle cx="498" cy="538" r="3" fill="#0F172A" stroke="#FFFFFF" stroke-width="1"/>
+                                    <text x="508" y="542" class="city-label">Бахчисарай</text>
+
+                                    <!-- Arkhangelsk (Kholmogory) -->
+                                    <circle cx="538" cy="78" r="2.8" fill="#0F172A" stroke="#FFFFFF" stroke-width="1"/>
+                                    <text x="546" y="82" class="city-label">Архангельск</text>
+
+                                    <!-- Kashlyk (Sibir) -->
+                                    <circle cx="935" cy="218" r="3" fill="#0F172A" stroke="#FFFFFF" stroke-width="1"/>
+                                    <text x="944" y="222" class="city-label">Кашлык</text>
+                                </g>
+
+                                <!-- Sea Titles -->
+                                <text x="248" y="155" font-family="Inter" font-style="italic" font-weight="600" font-size="10.5" fill="#FFFFFF" opacity="0.85" class="pointer-events-none">Балтийское море</text>
+                                <text x="445" y="582" font-family="Inter" font-style="italic" font-weight="600" font-size="12" fill="#FFFFFF" opacity="0.85" class="pointer-events-none">Чёрное море</text>
+                                <text x="835" y="595" font-family="Inter" font-style="italic" font-weight="600" font-size="11.5" fill="#FFFFFF" opacity="0.85" class="pointer-events-none">Каспийское море</text>
+                                <text x="585" y="22" font-family="Inter" font-style="italic" font-weight="600" font-size="10.5" fill="#FFFFFF" opacity="0.85" class="pointer-events-none">Белое и Баренцево море</text>
+                            </g>
+                        </svg>
+          <div class="history-date">Исторический срез<strong id="map-floating-date">1462 год</strong></div>
+          <div class="history-map-controls">
+            <button type="button" onclick="zoomMap(1.25)" aria-label="Приблизить">+</button>
+            <button type="button" onclick="zoomMap(0.8)" aria-label="Отдалить">−</button>
+            <button type="button" onclick="resetMapZoom()">Сброс</button>
+          </div>
+        </div>
+        <div class="history-stats">
+          <div class="history-stat">Политический статус<b id="hist-status">Московское княжество; зависимость от Орды</b></div>
+          <div class="history-stat">Главные изменения<b id="hist-change">Исходное положение</b></div>
+          <div class="history-stat">Опора власти<b id="hist-pillar">Княжеская администрация и служилые люди</b></div>
+          <div class="history-stat">Внешние вызовы<b id="hist-threat">Литва, Орда, Новгород и уделы</b></div>
+        </div>
+      </div>
+      <aside class="history-info-card">
+        <div>
+          <h4>Содержание эпохи</h4>
+          <h3 id="hist-ruler">Иван III</h3>
+        </div>
+        <ul id="hist-bullets">
+          <li>Московское княжество — одно из нескольких политических образований Северо-Восточной Руси.</li>
+          <li>Новгород, Тверь, Рязань и Псков сохраняют самостоятельность.</li>
+          <li>Большая Орда сохраняет претензии на верховенство; Литва — главный западный соперник.</li>
+        </ul>
+        <div class="history-info-box">
+          <h4>Стратегическая логика</h4>
+          <p id="hist-formula">Укрепление Москвы → дипломатия и династическая политика → постепенное расширение.</p>
+        </div>
+        <div class="history-info-box">
+          <h4 id="reg-title">Великое княжество Московское</h4>
+          <p><b id="reg-badge">Ядро</b></p>
+          <p id="reg-resource">Центр княжеской власти и сбора ресурсов.</p>
+          <p><b>События:</b> <span id="reg-event">Правление Ивана III (1462–1505).</span></p>
+          <p id="reg-outcome">Выбери территорию на карте, чтобы увидеть историческую справку.</p>
+        </div>
+      </aside>
+    </div>
+    <p class="history-disclaimer">Важно: это обзорная схема, а не кадастровая карта с точными линиями границ. Политические рубежи XV–XVI веков были подвижными, местами спорными и не всегда имели чёткую демаркацию. Территориальные заливки показывают общий контроль и политическую принадлежность, а не точную границу каждого уезда.</p>
+  </div>
+</section>
+
+<section class="sec" id="model">
+  <h2>Теория <em>/ модель</em></h2>
+  <p class="lead">Победа правителя ≠ <mark>благополучие государства</mark>.</p>
+  <div class="tabs" id="tabs"></div>
+  <div class="model" id="model-grid"></div>
+</section>
+
+<section class="sec" id="events">
+  <h2>События <em>/ нажми, чтобы раскрыть цену</em></h2>
+  <div id="cases"></div>
+</section>
+
+<section class="sec" id="play">
+  <h2>Твой ход <em>/ условная модель, не оценка</em></h2>
+  <div class="tabs" id="tabs2"></div>
+  <div class="game">
+    <div class="picks" id="picks"></div>
+    <div class="meters" id="meters"></div>
+  </div>
+</section>
+
+<section class="stats" id="verdict">
+  <div class="stat"><strong>43</strong><span>года правления Ивана III, 1462–1505</span></div>
+  <div class="stat"><strong>51</strong><span>год правления Ивана IV, 1533–1584</span></div>
+  <div class="stat"><strong>25</strong><span>лет Ливонской войны, 1558–1583</span></div>
+  <div class="stat"><strong>1598</strong><span>конец династии Рюриковичей</span></div>
+</section>
+
+<section class="sec">
+  <h2>Итог <em>/ одна игра или две</em></h2>
+  <div class="cmp">
+    <div class="cell hot"><h3>Сохранилось</h3><p>Сильная верховная власть, расширение, служилые люди, Москва как центр.</p></div>
+    <div class="cell warn"><h3>Изменилось</h3><p>Иван III выигрывал расчётом и паузами. Иван IV воевал на два фронта и давил на элиты.</p></div>
+    <div class="cell"><h3>Личность или время</h3><p>Время задавало задачи: границы и угрозы. Личность определила цену.</p></div>
+    <div class="cell dark"><h3>Параллель с сегодня</h3><p>Схожи централизация и безопасность. Отличаются технологии, право и международная система.</p></div>
+  </div>
+</section>
+
+<footer>
+  <h2 class="big"><span class="o" style="-webkit-text-stroke-color:var(--bg)">КВБО-12-26</span><span class="r"><h2 class="big"></h2></span></h2>
+  <p class="row">сайт делали Максим Степанов, Ергешова Асема и Дворянинов Александр</p>
+</footer>
+
+<script>
+const $=s=>document.querySelector(s);
+const ev=[
+{y:1462,r:3,t:'Старт',p:'Иван III на престоле. Задача: собрать земли вокруг Москвы.',m:'Цена ошибки: распад союза земель и давление Орды и Литвы.'},
+{y:1478,r:3,t:'Новгород',p:'Новгород тянулся к Литве и держал северные пути. Вечевой строй ликвидирован.',m:'Цена: вывоз вечевого колокола, переселения знати, рост страха перед Москвой.'},
+{y:1480,r:3,t:'Угра',p:'Хан Ахмат не решился на бой. Зависимость от Орды закончилась без битвы.',m:'Расчёт: союз с Крымом и ожидание, что литовская помощь Ахмату не придёт.'},
+{y:1485,r:3,t:'Тверь',p:'Тверской князь бежал в Литву, княжество вошло в состав Москвы.',m:'Главный соперник Москвы внутри Руси исчез.'},
+{y:1497,r:3,t:'Судебник',p:'Единые нормы суда, ограничение переходов крестьян в Юрьев день.',m:'Централизация выросла, а крестьянская свобода начала сужаться.'},
+{y:1533,r:4,t:'Регентство',p:'Иван IV становится великим князем в три года. Боярские группировки борются за власть.',m:'Детская травма власти: недоверие к знати вошло в политику.'},
+{y:1547,r:4,t:'Царь',p:'Венчание на царство. Новый титул: статус равный императорам.',m:'Идеология: Москва как наследница Византии и «Третий Рим».'},
+{y:1552,r:4,t:'Казань',p:'Взята Казань, затем Астрахань (1556). Волга под контролем Москвы.',m:'Выигрыш: безопасность востока и путь в Сибирь. Новые земли и новые заботы об управлении.'},
+{y:1558,r:4,t:'Ливония',p:'Начало войны за выход к Балтике. Главный стратегический замысел царя.',m:'Цена: 25 лет войны, истощение казны. Ям-Запольский мир 1582 и Плюсское перемирие 1583 не дали выхода к морю.'},
+{y:1565,r:4,t:'Опричнина',p:'Особая территория и отряды при царе. Цель: сломать влияние знати.',m:'Цена: террор, разгром Новгорода в 1570, хозяйственный разрыв.'},
+{y:1571,r:4,t:'Крым',p:'Девлет-Гирей сжёг посады Москвы. В 1572 победа при Молодях.',m:'Урок: война на два фронта опасна, даже если армия сильна.'},
+{y:1584,r:4,t:'Финал',p:'Смерть Ивана IV. Династия прервётся в 1598.',m:'Власть крепка, институты слабы: впереди Смута.'}];
+const M={3:{n:'Иван III',c:[
+['Карта','Москва в кольце: Новгород, Тверь, Литва, Орда. Реки — торговые пути.','hot'],
+['Игроки','PC: Иван III. NPC: бояре, церковь, служилые люди, Софья Палеолог.',''],
+['Старт','Сильнейший князь Руси, но без единого государства и с зависимостью от Орды.','warn'],
+['Победа','Собрать земли, снять ордынскую зависимость, поднять авторитет власти.',''],
+['Инструменты','Походы, дипломатия, брак, поместья, Судебник, Кремль с итальянскими мастерами.','dark'],
+['Поражение','Распад союза земель, мятеж бояр, разгром Литвой или Ордой.','']]},
+4:{n:'Иван IV',c:[
+['Карта','Огромная страна. Угрозы: Казань, Астрахань, Крым, Ливония, Литва, Швеция.','hot'],
+['Игроки','PC: Иван IV. NPC: бояре, Избранная рада, церковь, стрельцы, опричники.',''],
+['Старт','Единое государство есть, знатные роды влиятельны, доверия мало.','warn'],
+['Победа','Закрепить царскую власть, победить на востоке, выйти к Балтике.',''],
+['Инструменты','Венчание, Судебник 1550, стрельцы, соборы, Стоглав, опричнина, война.','dark'],
+['Поражение','Две войны сразу, внутренний террор, истощение и потеря наследника династии.','']]}};
+const G={3:[['Присоединить Новгород','Власть и земли вверх, стабильность вниз',{p:2,l:2,k:1,s:-1}],
+['Угра без боя','Безопасность без потерь',{p:1,l:0,k:0,s:2}],
+['Судебник 1497','Единые правила',{p:1,l:0,k:0,s:1}],
+['Поместья служилым','Лояльная армия',{p:2,l:0,k:-1,s:-1}],
+['Кремль','Престиж и затраты',{p:1,l:0,k:-1,s:0}]],
+4:[['Взять Казань','Волга и безопасность',{p:1,l:2,k:1,s:0}],
+['Избранная рада и Судебник 1550','Реформы',{p:1,l:0,k:0,s:2}],
+['Ливонская война','Земли ценой казны',{p:0,l:1,k:-2,s:-2}],
+['Опричнина','Власть растёт, страна слабеет',{p:3,l:0,k:-1,s:-3}],
+['Стрельцы','Постоянное войско',{p:1,l:0,k:-1,s:1}]]};
+const MET=[['p','Власть'],['l','Земли'],['k','Казна'],['s','Стабильность']];
+let cur=3,on=new Set();
+// marquee
+$('#mq').innerHTML=Array(2).fill('<span>Иван III</span><span>✕</span><span>Иван IV</span><span>✕</span><span>карта, решения, цена</span><span>✕</span>'.repeat(6)).join('');
+// timeline
+const anchors=[['model','Модель','k0']].concat(ev.map(e=>['e'+e.y,e.y,'k'+e.r]),[['verdict','Итог','k0']]);
+$('#tl').innerHTML=anchors.map(a=>`<button class="${a[2]}" data-t="${a[0]}">${a[1]}</button>`).join('');
+$('#tl').onclick=e=>{const b=e.target.closest('button');if(b)document.getElementById(b.dataset.t).scrollIntoView()};
+// cases
+$('#cases').innerHTML=ev.map(e=>`<button class="case" id="e${e.y}"><span class="y">${e.y}</span><h3>${e.t}</h3><span class="who ${e.r==3?'p3':''}">Иван ${e.r==3?'III':'IV'}</span><p>${e.p}</p><span class="more">${e.m}</span></button>`).join('');
+$('#cases').onclick=e=>{const c=e.target.closest('.case');if(c)c.classList.toggle('on')};
+// tabs
+function tabs(id,fn){$(id).innerHTML=[3,4].map(r=>`<button data-r="${r}">Иван ${r==3?'III':'IV'}</button>`).join('');$(id).onclick=e=>{const b=e.target.closest('button');if(b)fn(+b.dataset.r)};}
+function setTabs(){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',+b.dataset.r===cur))}
+function renderModel(){$('#model-grid').innerHTML=M[cur].c.map(c=>`<div class="cell ${c[2]}"><h3>${c[0]}</h3><p>${c[1]}</p></div>`).join('')}
+function renderGame(){
+ $('#picks').innerHTML=G[cur].map((g,i)=>`<button class="pick ${on.has(i)?'on':''}" data-i="${i}"><span>${g[0]}<small>${g[1]}</small></span></button>`).join('');
+ const v={p:5,l:5,k:5,s:5};on.forEach(i=>MET.forEach(([k])=>v[k]+=G[cur][i][2][k]));
+ MET.forEach(([k])=>v[k]=Math.max(0,Math.min(10,v[k])));
+ let t='Выбери решения и посмотри цену.';
+ if(on.size){t=v.p>=7&&v.s<=3?'Победа правителя. Государство платит.':v.s>=7&&v.p>=6?'Сильная власть и устойчивая страна.':v.k<=3?'Казна пуста. Победы будут краткими.':v.l>=7?'Земли растут, а управлять ими всё сложнее.':'Баланс держится, но ресурсов мало.'}
+ $('#meters').innerHTML=MET.map(([k,n])=>`<div class="m ${k=='s'?'s':''}"><b><span>${n}</span><span>${v[k]}/10</span></b><div class="track"><div class="fill" style="width:${v[k]*10}%"></div></div></div>`).join('')+`<p class="verdict">${t}</p>`;
+}
+$('#picks').onclick=e=>{const b=e.target.closest('.pick');if(!b)return;const i=+b.dataset.i;on.has(i)?on.delete(i):on.add(i);renderGame()};
+function setR(r){cur=r;on.clear();setTabs();renderModel();renderGame()}
+tabs('#tabs',setR);tabs('#tabs2',setR);setR(3);
+// scroll spy + progress
+const btns=[...document.querySelectorAll('#tl button')];
+const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){btns.forEach(b=>b.classList.toggle('on',b.dataset.t===en.target.id));const b=btns.find(b=>b.classList.contains('on'));if(b){const t=$('#tl');t.scrollTo({left:b.offsetLeft-t.clientWidth/2+b.offsetWidth/2,behavior:'smooth'})}}}),{rootMargin:'-40% 0px -55% 0px'});
+['model',...ev.map(e=>'e'+e.y),'verdict'].forEach(i=>io.observe(document.getElementById(i)));
+addEventListener('scroll',()=>{const h=document.documentElement;$('#bar').style.width=(scrollY/(h.scrollHeight-innerHeight)*100)+'%'},{passive:true});
+
+// Interactive historical atlas (map-only module; the rest of the page remains intact).
+const HIST_COLORS = {
+  moscow:"#D88B4B", novgorod:"#76A884", pskov:"#8AA882", tver:"#B59275",
+  ryazan:"#C47462", smolensk:"#B35472", kazan:"#C5B368", astrakhan:"#D99B72",
+  horde:"#D8C97E", siberia:"#BAC4C0"
+};
+const HIST_EPOCHS = [
+ {date:"1462 год",badge:"Иван III • начало правления",title:"1462 год — Московское княжество среди самостоятельных соседей",
+  ruler:"Иван III",status:"Княжество; сохраняется ордынская зависимость",change:"Исходное положение перед объединением",pillar:"Княжеский двор, служилые люди и договоры",
+  threat:"Литва, Большая Орда, Новгород, Тверь и Рязань",
+  bullets:[
+   "<strong>Политическая мозаика:</strong> Москва, Тверь, Рязань, Новгород и Псков — отдельные политические центры.",
+   "<strong>Запад:</strong> Великое княжество Литовское контролирует значительные русские земли и соперничает с Москвой.",
+   "<strong>Юг:</strong> после распада Золотой Орды существует Большая Орда; отношения с Крымским ханством меняются и строятся на дипломатии."
+  ],formula:"Укрепление Москвы → дипломатия и династическая политика → постепенное расширение.",
+  absorbed:[],livoniaSplit:false,polandUnion:false,oprichnina:false,tradeVolga:false,tradeWhiteSea:false,vecGroup:null,
+  muscovyLabel:"ВЕЛ. КН. МОСКОВСКОЕ",muscovyPos:{x:595,y:242}},
+ {date:"1478–1485 гг.",badge:"Иван III • северо-восточная консолидация",title:"1478–1485 годы — Новгород и Тверь входят в состав Москвы",
+  ruler:"Иван III",status:"Москва расширяет владения; ордынская зависимость прекращается в 1480 году",
+  change:"Новгород (1478), стояние на Угре (1480), Тверь (1485)",pillar:"Поместная система и великокняжеская администрация",
+  threat:"Литва и Большая Орда",
+  bullets:[
+   "<strong>1478:</strong> Новгородская республика ликвидирована, её политическая самостоятельность прекращена; часть местной знати переселена, земли конфискованы.",
+   "<strong>1480:</strong> стояние на Угре завершилось отступлением войск Ахмата; традиционно считается концом ордынской зависимости Москвы.",
+   "<strong>1485:</strong> Тверское княжество присоединено к Москве. Псков и Рязань пока сохраняют отдельный статус."
+  ],formula:"Военное давление + дипломатия + присоединение ключевых земель → усиление великокняжеского центра.",
+  absorbed:["novgorod","tver"],livoniaSplit:false,polandUnion:false,oprichnina:false,tradeVolga:false,tradeWhiteSea:false,vecGroup:"vec-epoch-1",
+  muscovyLabel:"ВЕЛ. КН. МОСКОВСКОЕ",muscovyPos:{x:595,y:175}},
+ {date:"1503–1521 гг.",badge:"Иван III / Василий III • завершение объединения",title:"1503–1521 годы — Псков, Смоленск и Рязань",
+  ruler:"Иван III и Василий III",status:"Крупное централизующееся государство; ордынской зависимости нет",
+  change:"Псков (1510), Смоленск (1514), Рязань (1521)",pillar:"Судебник 1497 года, наместничество и поместное войско",
+  threat:"Великое княжество Литовское и Крымское ханство",
+  bullets:[
+   "<strong>1503:</strong> после войны с Литвой к Москве отошла часть чернигово-северских земель; Смоленск тогда ещё оставался литовским.",
+   "<strong>1510:</strong> присоединён Псков; <strong>1514:</strong> после войны взят Смоленск.",
+   "<strong>1521:</strong> Рязанское княжество окончательно включено в состав Московского государства. Большая Орда прекратила существование в 1502 году; Крымское ханство осталось отдельной силой."
+  ],formula:"Объединение земель → унификация управления и права → укрепление государства.",
+  absorbed:["novgorod","tver","pskov","smolensk","ryazan"],livoniaSplit:false,polandUnion:false,oprichnina:false,tradeVolga:false,tradeWhiteSea:false,vecGroup:"vec-epoch-2",
+  muscovyLabel:"РУССКОЕ ГОСУДАРСТВО",muscovyPos:{x:575,y:195}},
+ {date:"1552–1556 гг.",badge:"Иван IV • расширение на Волге",title:"1552–1556 годы — Казань и Астрахань",
+  ruler:"Иван IV",status:"Русское царство (царский титул принят в 1547 году)",
+  change:"Казань (1552), Астрахань (1556)",pillar:"Приказы, Земские соборы, реформы и стрелецкое войско",
+  threat:"Крымское ханство, Ногайская Орда и западные соседи",
+  bullets:[
+   "<strong>1552:</strong> взятие Казани после нескольких походов и строительства Свияжска.",
+   "<strong>1556:</strong> присоединение Астраханского ханства установило контроль Москвы над нижней Волгой.",
+   "<strong>1553:</strong> английская экспедиция достигла Белого моря; торговые связи развивались через северные порты. Архангельск основан позднее, в 1584 году."
+  ],formula:"Военные реформы + контроль Волги → расширение государства и новые задачи управления.",
+  absorbed:["novgorod","tver","pskov","smolensk","ryazan","kazan","astrakhan"],livoniaSplit:false,polandUnion:false,oprichnina:false,tradeVolga:true,tradeWhiteSea:true,vecGroup:"vec-epoch-3",
+  muscovyLabel:"РУССКОЕ ЦАРСТВО",muscovyPos:{x:615,y:235}},
+ {date:"1558–1583 гг.",badge:"Иван IV • война и внутренний кризис",title:"1558–1583 годы — Ливонская война, опричнина и южная угроза",
+  ruler:"Иван IV",status:"Царство расширилось на востоке, но не закрепилось на Балтике",
+  change:"Распад Ливонской конфедерации; перемирия 1582–1583 годов",pillar:"Приказы и служилое войско; опричнина в 1565–1572 годах",
+  threat:"Речь Посполитая, Швеция и Крымское ханство",
+  bullets:[
+   "<strong>Ливонская война:</strong> началась в 1558 году; после Люблинской унии 1569 года Москва воевала с Речью Посполитой, а также со Швецией.",
+   "<strong>Опричнина (1565–1572):</strong> репрессии и разорение ряда районов ослабили хозяйство и управленческие связи; в 1570 году опричное войско разгромило Новгород.",
+   "<strong>1571–1572:</strong> Девлет-Гирей сжёг Москву в 1571 году, а в 1572 году крымское войско было остановлено при Молодях.",
+   "<strong>1581–1582:</strong> поход Ермака стал началом русского продвижения в Сибирь, но Сибирское ханство к 1584 году ещё не было полностью присоединено."
+  ],formula:"Длительная война + внутреннее насилие → истощение ресурсов; восточное продвижение только начинается.",
+  absorbed:["novgorod","tver","pskov","smolensk","ryazan","kazan","astrakhan"],livoniaSplit:true,polandUnion:true,oprichnina:true,tradeVolga:true,tradeWhiteSea:true,vecGroup:"vec-epoch-4",
+  muscovyLabel:"РУССКОЕ ЦАРСТВО",muscovyPos:{x:655,y:235}}
+];
+const HIST_REGIONS = {
+ moscow:{title:"Московское княжество / Русское царство",badge:"Центр власти",resource:"Земледельческие уезды, ремесло, сбор налогов и служилое войско.",event:"Централизация при Иване III; реформы середины XVI века; опричнина 1565–1572 годов.",outcome:"Политический центр объединения земель. Рост территории сопровождался усложнением управления и ростом военных расходов."},
+ novgorod:{title:"Новгородская земля",badge:"Северо-запад",resource:"Торговля, пушнина, соляные промыслы и выход к Балтийским и Беломорским путям.",event:"Присоединение к Москве в 1478 году; разгром города опричным войском в 1570 году.",outcome:"После присоединения политическая автономия Новгорода была ликвидирована; местная элита подверглась конфискациям и переселениям."},
+ pskov:{title:"Псковская земля",badge:"Западный рубеж",resource:"Крепости и торговые связи на западном направлении.",event:"Присоединён к Москве в 1510 году.",outcome:"До 1510 года сохранял отдельный республиканский строй; после присоединения вошёл в систему московского управления."},
+ tver:{title:"Тверское княжество",badge:"Соперник Москвы",resource:"Верхневолжские пути, пашня и княжеская дружина.",event:"Присоединено к Москве в 1485 году.",outcome:"Одно из главных соперничающих княжеств Северо-Восточной Руси; его присоединение укрепило территориальную связность московских владений."},
+ ryazan:{title:"Рязанское княжество",badge:"Южная граница",resource:"Окские и степные пограничные пути.",event:"Окончательное включение в Московское государство в 1521 году.",outcome:"До начала XVI века сохраняло отдельную династическую политику; после присоединения стало частью южного пограничного пространства государства."},
+ smolensk:{title:"Смоленская земля",badge:"Западный рубеж",resource:"Верховья Днепра и важный узел путей между Русью и Литвой.",event:"Взят Москвой в 1514 году после войны с Великим княжеством Литовским.",outcome:"Стратегически важная крепость на западном направлении; контроль над ней неоднократно оспаривался."},
+ livonia:{title:"Ливонская конфедерация",badge:"Балтийский регион",resource:"Порты и торговые центры восточного побережья Балтики.",event:"Ливонская война 1558–1583 годов; распад конфедерации в ходе войны.",outcome:"Территории бывшей конфедерации перешли под контроль нескольких держав, включая Швецию, Речь Посполитую и Данию. Москва не удержала балтийские приобретения."},
+ lithuania:{title:"Великое княжество Литовское / Речь Посполитая",badge:"Западный соперник",resource:"Земли Руси, города, торговые пути и военные ресурсы.",event:"Люблинская уния 1569 года объединила Корону Польскую и Великое княжество Литовское в федеративное государство.",outcome:"Западный соперник Москвы изменил политическую форму и ресурсы в ходе Ливонской войны."},
+ sweden:{title:"Королевство Швеция",badge:"Балтийская держава",resource:"Балтийские порты, флот и контроль над Финским заливом.",event:"Участие в борьбе за Ливонию; Плюсское перемирие с Москвой в 1583 году.",outcome:"Швеция закрепила ряд позиций на восточном побережье Балтики; перемирие не означало окончательного урегулирования."},
+ kazan:{title:"Казанское ханство",badge:"Средняя Волга",resource:"Среднее Поволжье и важные участки Волжско-Камских путей.",event:"Взято войсками Ивана IV в октябре 1552 года.",outcome:"Включение Казани расширило контроль Москвы над Волгой, но потребовало дальнейшего военного и административного закрепления."},
+ astrakhan:{title:"Астраханское ханство",badge:"Нижняя Волга",resource:"Устье Волги и каспийские торговые связи.",event:"Присоединено в 1556 году.",outcome:"Контроль над нижней Волгой усилил позиции Москвы на каспийском направлении."},
+ crimea:{title:"Крымское ханство",badge:"Южный соперник",resource:"Степная конница и связи с Османской империей.",event:"Набег Девлет-Гирея и сожжение Москвы в 1571 году; битва при Молодях в 1572 году.",outcome:"Крымское ханство оставалось самостоятельной державой и одним из главных военных противников Москвы."},
+ horde:{title:"Большая Орда и степные территории",badge:"Степной пояс",resource:"Кочевое скотоводство и контроль степных маршрутов.",event:"Большая Орда прекратила существование в 1502 году.",outcome:"Нельзя отождествлять Большую Орду с Крымским ханством: это разные политические образования. После 1502 года степной регион оставался пространством нескольких орд и ханств."},
+ siberia:{title:"Сибирское ханство",badge:"За Уралом",resource:"Торговля, дань и пушные промыслы.",event:"Поход Ермака начался в 1581 году; столкновение с ханом Кучумом продолжилось в 1580-е годы.",outcome:"К концу правления Ивана IV Сибирское ханство не было полностью присоединено. Поход Ермака открыл следующий этап экспансии, а не завершил её."}
+};
+function histSelectRegion(key){
+ const d=HIST_REGIONS[key]; if(!d)return;
+ document.getElementById('reg-title').textContent=d.title;
+ document.getElementById('reg-badge').textContent=d.badge;
+ document.getElementById('reg-resource').textContent=d.resource;
+ document.getElementById('reg-event').textContent=d.event;
+ document.getElementById('reg-outcome').textContent=d.outcome;
+ document.querySelectorAll('#historical-svg .map-region').forEach(p=>p.classList.remove('active-region'));
+ const region=document.querySelector(`#historical-svg [id="reg-${key}"]`);
+ if(region)region.classList.add('active-region');
+}
+function histSetEpoch(idx){
+ const ep=HIST_EPOCHS[idx]; if(!ep)return;
+ document.getElementById('hist-slider').value=idx;
+ document.getElementById('hist-era-badge').textContent=ep.badge;
+ document.getElementById('hist-era-title').textContent=ep.title;
+ document.getElementById('map-floating-date').textContent=ep.date;
+ document.getElementById('hist-ruler').textContent=ep.ruler;
+ document.getElementById('hist-status').textContent=ep.status;
+ document.getElementById('hist-change').textContent=ep.change;
+ document.getElementById('hist-pillar').textContent=ep.pillar;
+ document.getElementById('hist-threat').textContent=ep.threat;
+ document.getElementById('hist-bullets').innerHTML=ep.bullets.map(x=>`<li>${x}</li>`).join('');
+ document.getElementById('hist-formula').textContent=ep.formula;
+ document.querySelectorAll('.history-steps button').forEach((b,i)=>b.classList.toggle('active',i===idx));
+ const base={novgorod:HIST_COLORS.novgorod,pskov:HIST_COLORS.pskov,tver:HIST_COLORS.tver,ryazan:HIST_COLORS.ryazan,smolensk:HIST_COLORS.smolensk,kazan:HIST_COLORS.kazan,astrakhan:HIST_COLORS.astrakhan,horde:HIST_COLORS.horde,siberia:HIST_COLORS.siberia};
+ Object.entries(base).forEach(([key,color])=>{
+  const poly=document.getElementById('reg-'+key);
+  const label=document.getElementById('lbl-'+key);
+  const absorbed=ep.absorbed.includes(key);
+  if(poly){poly.setAttribute('fill',absorbed?HIST_COLORS.moscow:color);poly.classList.toggle('absorbed-border',absorbed);}
+  if(label)label.style.opacity=absorbed?'0.22':'1';
+ });
+ const hordeLabel=document.getElementById('lbl-horde');
+ if(hordeLabel)hordeLabel.textContent=idx>=2?'СТЕПНЫЕ ОРДЫ':'БОЛЬШАЯ ОРДА';
+ const livonia=document.getElementById('reg-livonia');
+ if(livonia)livonia.setAttribute('fill',ep.livoniaSplit?'url(#livoniaHatch)':'#9B8BB4');
+ document.getElementById('reg-poland').setAttribute('fill',ep.polandUnion?'#AD4967':'#CE6A7B');
+ document.getElementById('reg-lithuania').setAttribute('fill',ep.polandUnion?'#AD4967':'#B35472');
+ const m=document.getElementById('major-lbl-muscovy');
+ m.textContent=ep.muscovyLabel;m.setAttribute('x',ep.muscovyPos.x);m.setAttribute('y',ep.muscovyPos.y);
+ document.getElementById('major-lbl-lith-1').textContent=ep.polandUnion?'РЕЧЬ ПОСПОЛИТАЯ':"ВЕЛИКОЕ КНЯЖЕСТВО";
+ document.getElementById('major-lbl-lith-2').textContent=ep.polandUnion?'(УНИЯ 1569 Г.)':"ЛИТОВСКОЕ";
+ document.getElementById('reg-oprichnina').classList.toggle('hidden',!ep.oprichnina);
+ document.getElementById('legend-oprich-pill')?.classList.toggle('hidden',!ep.oprichnina);
+ document.getElementById('trade-volga').setAttribute('opacity',ep.tradeVolga?'1':'0');
+ document.getElementById('trade-whitesea').setAttribute('opacity',ep.tradeWhiteSea?'1':'0');
+ ['vec-epoch-1','vec-epoch-2','vec-epoch-3','vec-epoch-4'].forEach(id=>document.getElementById(id).setAttribute('opacity',ep.vecGroup===id?'1':'0'));
+}
+document.querySelector('.history-steps').addEventListener('click',e=>{
+ const b=e.target.closest('button[data-epoch]');if(b)histSetEpoch(+b.dataset.epoch);
+});
+document.getElementById('hist-slider').addEventListener('input',e=>histSetEpoch(+e.target.value));
+document.querySelectorAll('.history-layers input').forEach(input=>input.addEventListener('change',()=>{
+ const el=document.getElementById(input.dataset.layer);if(el)el.style.display=input.checked?'':'none';
+}));
+// Map pan/zoom in SVG coordinates.
+let histScale=1,histX=0,histY=0,histPointer=null,histMoved=false;
+function histApplyTransform(){document.getElementById('map-pan-zoom-group').setAttribute('transform',`translate(${histX} ${histY}) scale(${histScale})`);}
+function zoomMap(factor){
+ const next=Math.min(3.2,Math.max(1,histScale*factor));
+ if(next===1){histX=0;histY=0;}else{
+  const ratio=next/histScale,cx=550,cy=350;
+  histX=cx-(cx-histX)*ratio;histY=cy-(cy-histY)*ratio;
+ }
+ histScale=next;histApplyTransform();
+}
+function resetMapZoom(){histScale=1;histX=0;histY=0;histApplyTransform();}
+const histViewport=document.getElementById('map-viewport');
+histViewport.addEventListener('pointerdown',e=>{
+ if(e.target.closest('.history-map-controls'))return;
+ histPointer={id:e.pointerId,x:e.clientX,y:e.clientY,tx:histX,ty:histY};histMoved=false;
+});
+histViewport.addEventListener('pointermove',e=>{
+ if(!histPointer||histScale<=1)return;
+ const dx=(e.clientX-histPointer.x)*1100/histViewport.clientWidth;
+ const dy=(e.clientY-histPointer.y)*700/histViewport.clientHeight;
+ if(Math.abs(dx)+Math.abs(dy)>3)histMoved=true;
+ histX=Math.min(0,Math.max(-1100*(histScale-1),histPointer.tx+dx));
+ histY=Math.min(0,Math.max(-700*(histScale-1),histPointer.ty+dy));
+ histApplyTransform();
+});
+histViewport.addEventListener('pointerup',()=>{histPointer=null;});
+histViewport.addEventListener('pointercancel',()=>{histPointer=null;});
+histViewport.addEventListener('wheel',e=>{if(e.ctrlKey){e.preventDefault();zoomMap(e.deltaY<0?1.12:.89);}},{passive:false});
+histSelectRegion('moscow');
+histSetEpoch(0);
+
+</script>
+</body>
+</html>
